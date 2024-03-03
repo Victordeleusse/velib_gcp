@@ -1,0 +1,9 @@
+flask
+requests
+beautifulsoup4
+flask-cors
+flask-socketio
+python-dotenv
+# gunicorn # pour le passage en prod
+python-socketio[client]
+eventlet

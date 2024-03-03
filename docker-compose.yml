@@ -1,13 +1,31 @@
 version: '3.8'
 
 services:
-  app:
+  data_api:
     build:
-      context: ./functions
+      context: .
+      dockerfile: functions/Dockerfile
     ports:
       - "8000:8000"
     env_file:
       - .env
     volumes:
       - .:/app
+
+  app:
+    build:
+      context: .
+      dockerfile: app/Dockerfile
+    restart: always
+    volumes:
+      - ./app:/app
+      - ./app/app.py:/app/app.py
+    env_file:
+      - .env
+    ports:
+      - "5000:5000"
+    environment:
+      FLASK_APP: app/app.py
+      FLASK_ENV: development
+      FLASK_RUN_HOST: 0.0.0.0
 
