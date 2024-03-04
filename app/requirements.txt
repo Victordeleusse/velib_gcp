@@ -6,3 +6,6 @@ python-dotenv
 # gunicorn # pour le passage en prod
 # python-socketio[client]
 eventlet
+google-cloud-bigquery==3.11.4
+google-cloud-core==2.3.3
+pandas
