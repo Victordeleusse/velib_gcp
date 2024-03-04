@@ -64,7 +64,7 @@ def get_realtime_data(stationCode=None):
         station["is_installed"]             = record["is_installed"]
         station["is_returning"]             = record["is_returning"]
         station["is_renting"]               = record["is_renting"]
-        station["last_reported"]              = record["last_reported"]
+        station["last_reported"]            = record["last_reported"]
 
         data.append(station)
 

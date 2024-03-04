@@ -49,7 +49,7 @@ record_schema = [
     bigquery.SchemaField("is_installed",            "INT64"),
     bigquery.SchemaField("is_returning",            "INT64"),
     bigquery.SchemaField("is_renting",              "INT64"),
-    bigquery.SchemaField("last_report",             "TIMESTAMP"),
+    bigquery.SchemaField("last_reported",             "TIMESTAMP"),
 ]
 table = bigquery.Table(table_id_records, schema=record_schema)
 table = client.create_table(table)  # Make an API request.
@@ -61,10 +61,10 @@ print(
 # Will get a new bucket to upload new data weekly or monthly maybe in the futur
 url_stations_list = 'https://velib-metropole-opendata.smovengo.cloud/opendata/Velib_Metropole/station_information.json'
 response = requests.get(url_stations_list)
-data = response.json()
+data = response.json()["data"]["stations"]
 
 rows_to_insert = []
-for record in data["data"]["stations"]:
+for record in data:
     rows_to_insert.append(
         (
             record["station_id"],
