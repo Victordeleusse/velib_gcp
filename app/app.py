@@ -8,15 +8,16 @@ load_dotenv()
 def create_app():
     app = Flask(__name__)
     CORS(app, resources={r"/*": {"origins": "*"}}, supports_credentials=True)
-    debug_mode = os.environ.get('FLASK_DEBUG', 'false').lower() in ['true', '1', 't']
-    app.debug = debug_mode
+    # debug_mode = os.environ.get('FLASK_DEBUG', 'false').lower() in ['true', '1', 't']
+    # app.debug = debug_mode
+    # app.debug = 'True'
     return app
 
 app = create_app()
 
 @app.route('/')
 def hello_world():
-    return 'Hello, World!'
+    return 'Hello, World!!'
 
 if __name__ == '__main__':
-    app.run()
+    app.run(debug=True)
