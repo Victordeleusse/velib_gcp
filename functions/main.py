@@ -54,6 +54,7 @@ def insert_data_json_to_bigquery(data, project_id=project_id, dataset_id=dataset
     table = client.get_table(table_ref)  # API call
 
     data_to_insert = []
+    last_report = data["lastUpdatedOther"]
     for record in data['data']['stations']:
         row = {}
         row["stationCode"]              = record["stationCode"]
@@ -67,7 +68,7 @@ def insert_data_json_to_bigquery(data, project_id=project_id, dataset_id=dataset
         row["is_installed"]             = record["is_installed"]
         row["is_returning"]             = record["is_returning"]
         row["is_renting"]               = record["is_renting"]
-        row["last_reported"]              = record["last_reported"]
+        row["last_reported"]            = last_report
         data_to_insert.append(row)
     client.insert_rows(table, data_to_insert)
 

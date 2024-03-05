@@ -36,6 +36,7 @@ def get_realtime_data(stationCode=None):
     url_stations_records = "https://velib-metropole-opendata.smovengo.cloud/opendata/Velib_Metropole/station_status.json"
     response = requests.get(url_stations_records)
     records = response.json()["data"]["stations"]
+    last_report = response.json()["lastUpdatedOther"]
 
     data = []
     for record in records:
@@ -64,7 +65,7 @@ def get_realtime_data(stationCode=None):
         station["is_installed"]             = record["is_installed"]
         station["is_returning"]             = record["is_returning"]
         station["is_renting"]               = record["is_renting"]
-        station["last_reported"]            = record["last_reported"]
+        station["last_reported"]            = last_report
 
         data.append(station)
 

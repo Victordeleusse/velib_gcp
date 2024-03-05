@@ -1,0 +1,9 @@
+python-dotenv
+google-cloud-bigquery==3.11.4
+google-cloud-core==2.3.3
+pyspark==3.1.1
+pandas
+findspark
+numpy==1.20.1
+sqlite3
+requests
