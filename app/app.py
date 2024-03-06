@@ -22,13 +22,9 @@ client = bigquery.Client()
 def create_app():
     app = Flask(__name__)
     CORS(app, resources={r"/*": {"origins": "*"}}, supports_credentials=True)
-    # debug_mode = os.environ.get('FLASK_DEBUG', 'false').lower() in ['true', '1', 't']
-    # app.debug = debug_mode
     return app
 
-
 app = create_app()
-
 
 # # # # # ROUTES # # # # #
 

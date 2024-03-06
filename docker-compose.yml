@@ -35,13 +35,14 @@ services:
       context: ./data
       dockerfile: Dockerfile
     image: spark-image
-    command: ["start-master"]
     ports:
       - "8080:8080"  # Port de l'UI du maître Spark
     volumes:
+      - ./data:/app
       - ./data/spark-apps:/opt/spark-apps  # Pour les applications Spark
       - ./data/spark-data:/opt/spark-data  # Pour les datas Spark
-  
+      - ./data/key-booming-splicer-415918.json:/opt/spark-data/key-booming-splicer-415918.json
+
   spark-worker:
     build:
       context: ./data

@@ -1,0 +1,34 @@
+Colonne(s) dans la table 'stations':
+ - code
+ - name
+ - latitude
+ - longitude
+ - type
+ - dateOuverture
+ - adresse
+ - insee
+Colonne(s) dans la table 'status':
+ - id
+ - code
+ - idConso
+ - state
+ - nbBike
+ - nbEBike
+ - nbFreeEDock
+ - nbEDock
+ - nbBikeOverflow
+ - nbEBikeOverflow
+ - maxBikeOverflow
+ - overflow
+ - overflowActivation
+Colonne(s) dans la table 'statusConso':
+ - id
+ - date
+ - nbStation
+ - nbStationDetecte
+ - nbBike
+ - nbEbike
+ - nbBikeOverflow
+ - nbEbikeOverflow
+ - nbFreeEDock
+ - nbEDock

@@ -10,7 +10,6 @@ import os
 
 # Define variables for Cloud Functions
 project_id = 'booming-splicer-415918'
-# bucket_stations_list = 'velib_api_data_stations_list' # to store stations caracteristics (low frequency)
 bucket_stations_records = 'velib_api_data_stations_records' # to store datas from stations (high frequency)
 dataset_id = 'velib_api_dataset'
 # table_id_stations = project_id + '.' + dataset_id + '.stations'

@@ -1,59 +1,46 @@
-# import findspark
+import findspark
 import os
 import sqlite3
 import requests
-# from pyspark.sql import SparkSession, SQLContext
-# from pyspark import SparkContext
+import csv
+import pandas as pd
+import pytz
+from datetime import datetime
+from google.cloud import storage
+from pyspark.sql import SparkSession
 
-# findspark.init()
-# sc = SparkContext("local")
-# sql_c = SQLContext(sc)
+spark = SparkSession.builder.appName("SQLite Data Processing").getOrCreate()
 
-def import_data():
+# # # GC Storage # # # 
+project_id = 'booming-splicer-415918'
+os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "key-" + project_id + ".json"
+bucket_historical_data = 'velib_api_historical_data'
+
+# # # URL data link # # #
+url_historical_data_base = 'https://velib.nocle.fr/dump/' #2024-MM-DD-data.db
+
+# # # Settings # # #
+paris_tz = pytz.timezone('Europe/Paris')
+str_time_paris = datetime.now(paris_tz).strftime('%Y-%m-%d_%H:%M:%S')
+
+def download_historical_data(bucket_name, url):
+    """Télécharge un contenu directement depuis une URL vers un blob GCS."""
+    storage_client = storage.Client()
+    bucket = storage_client.bucket(bucket_name)
     for i in range(1, 3):
-        filename = f"2024-03-0{i}-data.db"
-        if not os.path.isfile(filename):
-            url = f"https://velib.nocle.fr/dump/2024-03-0{i}-data.db"
-            response = requests.get(url)
-            with open(filename, 'wb') as file:
-                file.write(response.content)
+        destination_blob_name = f"2024-03-0{i}-data.db"
+        blob = bucket.blob(destination_blob_name)
+        if blob.exists():
+            print(f"Le blob {destination_blob_name} existe déjà dans gs://{bucket_name}. Téléchargement ignoré.")
+        # Télécharger le contenu depuis l'URL
         else:
-            print(f"Le fichier {filename} existe déjà. Téléchargement ignoré.")
-
-    # for i in range(1, 3):
-    #     filename = f"2024-03-0{i}-data.db"
-    #     print(f"Tables in {filename}:")
-    #     conn = sqlite3.connect(filename)
-    #     cursor = conn.cursor()
-    #     cursor.execute("SELECT name FROM sqlite_master WHERE type='table';")
-    #     tables = cursor.fetchall()
-    #     for table_name in tables:
-    #         print(table_name[0]) 
-    #     conn.close()
-    
-    ma_table = 'stations'
-    for i in range(1, 3):
-        filename = f"2024-03-0{i}-data.db"
-        conn = sqlite3.connect(filename)
-        cursor = conn.cursor()
-        cursor.execute("SELECT * FROM ${ma_table}")  # Remplacez 'ma_table' par le nom de votre table
-        rows = cursor.fetchall()
-        print(rows)
-        conn.close()
+            url_date = url + f"2024-03-0{i}-data.db"
+            response = requests.get(url_date)
+            if response.status_code == 200:
+                blob.upload_from_string(response.content)
+                print(f"Le contenu de {url} a été téléchargé dans gs://{bucket_name}/{destination_blob_name}.")
+            else:
+                print(f"Échec du téléchargement depuis {url}")    
 
 if __name__ == "__main__":
-    import_data()
-
-
-# for i in range(1, 3):
-#     filename = f"2024-03-0{i}-data.db"
-    
-#     conn = sqlite3.connect(filename)
-#     cursor = conn.cursor()
-    
-#     cursor.execute("SELECT * FROM ma_table")  # Remplacez 'ma_table' par le nom de votre table
-#     rows = cursor.fetchall()
-    
-#     print(rows)
-    
-#     conn.close()
+    download_historical_data(bucket_historical_data, url_historical_data_base)
