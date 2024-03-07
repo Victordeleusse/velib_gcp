@@ -2,7 +2,7 @@ FROM python:3.8-slim
 
 # Définir les variables d'environnement pour Spark
 RUN apt-get update && \
-    apt-get install -y openjdk-17-jre-headless wget && \
+    apt-get install -y openjdk-17-jre-headless wget procps && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 

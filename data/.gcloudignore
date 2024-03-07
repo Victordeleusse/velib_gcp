@@ -1,0 +1,6 @@
+start-spark.sh
+Dockerfile
+/spark-apps
+/spark-data
+.gitignore
+A-info.txt

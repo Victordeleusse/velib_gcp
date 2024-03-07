@@ -35,6 +35,8 @@ services:
       context: ./data
       dockerfile: Dockerfile
     image: spark-image
+    env_file:
+      - .env
     ports:
       - "8080:8080"  # Port de l'UI du maître Spark
     volumes:
