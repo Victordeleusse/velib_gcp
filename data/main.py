@@ -2,6 +2,7 @@
 from io import BytesIO
 import os
 import sqlite3
+import pandas as pd
 import requests
 import tempfile
 import pandas as pd
@@ -93,8 +94,12 @@ def sqlite_to_gcs(bucket_name, file_name):
     finally:
         os.remove(temp_file_name)
     
+def read_csv(data):
+    df = pd.read_csv(data)
+    print(df.head())
     
 if __name__ == "__main__":
     print("EXECUTION")
-    load_data_in_temp_bucket()
-    
+    # load_data_in_temp_bucket()
+    data_csv = 'gs://victordeleusse2024-03-03/join_status.csv'
+    read_csv(data_csv)
