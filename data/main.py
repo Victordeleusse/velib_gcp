@@ -26,12 +26,10 @@ bucket_historical_data = "velib_api_historical_data"
 # # # URL data link # # #
 url_historical_data_base = "https://velib.nocle.fr/dump/"  # 2024-MM-DD-data.db
 
-
 def get_yesterday():
     today = date.today()
     yesterday = today - timedelta(days=4)
     return yesterday
-
 
 def load_data_in_temp_bucket():
     """
@@ -105,12 +103,11 @@ region = "us-central1"
 # 2. Getting files to specific bucket : pyspark_functions.py / requirements.txt / key.json
 # 3. DATAPROC jobs submit to execute the script in the dataproc directly
 
-
-def submit_dataproc_job(pyspark_script):
+def submit_dataproc_job():
     bucket_name = 'gs://pysparkfunctions/'
     cluster_name = "velib-api1-cluster"
     region = "us-central1"
-    command = f"gcloud dataproc jobs submit pyspark {bucket_name}{pyspark_script} \ 
+    command = f"gcloud dataproc jobs submit pyspark {bucket_name}functions.py \
     --cluster={cluster_name} \
     --region={region} \
     --files={bucket_name}key-booming-splicer-415918.json \
@@ -121,17 +118,13 @@ def submit_dataproc_job(pyspark_script):
     except subprocess.CalledProcessError as e:
         print(f"Failed to submit job: {e}")
 
-    
-
-def read_csv(data):
-    df = pd.read_csv(data)
-    print(df.head())
-
+# def read_csv(data):
+#     df = pd.read_csv(data)
+#     print(df.head())
 
 if __name__ == "__main__":
     # print("EXECUTION")
     # # load_data_in_temp_bucket()
     # data_csv = "gs://victordeleusse2024-03-03/join_status.csv"
     # read_csv(data_csv)
-    pyspark_script = "functions.py"
-    submit_dataproc_job(pyspark_script)
+    submit_dataproc_job()

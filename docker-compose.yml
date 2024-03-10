@@ -1,34 +1,6 @@
 version: '3.8'
 
 services:
-  
-  data_api:
-    build:
-      context: ./functions
-      dockerfile: Dockerfile
-    restart: always
-    volumes:
-      - ./functions:/functions
-    env_file:
-      - .env
-    ports:
-      - "8000:8000"
-
-  flaskapp:
-    build:
-      context: ./app
-      dockerfile: Dockerfile
-    restart: always
-    volumes:
-      - ./app:/app
-    env_file:
-      - .env
-    ports:
-      - "5000:5000"
-    environment:
-      FLASK_APP: app.py
-      FLASK_ENV: development
-      FLASK_RUN_HOST: 0.0.0.0
 
   spark-master:
     build:
