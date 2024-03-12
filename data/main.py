@@ -1,5 +1,5 @@
-import findspark
-import pyspark
+# import findspark
+# import pyspark
 import os
 import sqlite3
 import pandas as pd
@@ -11,55 +11,58 @@ from datetime import date
 from datetime import timedelta
 from google.cloud import storage
 from google.cloud import exceptions
-import subprocess
+# import subprocess
 from google.cloud.exceptions import NotFound
-from pyspark import SparkContext
-from pyspark.sql import SparkSession, SQLContext, functions
+# from pyspark import SparkContext
+# from pyspark.sql import SparkSession, SQLContext, functions
 
 
 # # # GC Storage # # #
-project_id = "booming-splicer-415918"
+project_id = os.getenv("PROJECT_ID")
 os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "key-" + project_id + ".json"
 gcp_key_file = os.getenv("GOOGLE_APPLICATION_CREDENTIALS")
-bucket_historical_data = "velib_api_historical_data"
 
-# # # URL data link # # #
+# # # URL historical data link # # #
 url_historical_data_base = "https://velib.nocle.fr/dump/"  # 2024-MM-DD-data.db
 
-def get_yesterday():
+def get_prw_week_bdays():
     today = date.today()
-    yesterday = today - timedelta(days=4)
-    return yesterday
+    day_of_week = today.weekday()
+    # day_names = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
+    day_list = []
+    for i in range(day_of_week + 3, day_of_week + 8):
+        day = today - timedelta(days=i)
+        # day_of_w = day.weekday()
+        # day_list.append(day_names[day_of_w])
+        day_list.append(day.strftime("%Y-%m-%d"))
+    return day_list
 
-def load_data_in_temp_bucket():
+def load_data_in_temp_bucket(day_list):
     """
     Background Cloud Function to be triggered manually by an event HTTP.
     """
-    storage_client = storage.Client()
-    yesterday_date = get_yesterday().strftime("%Y-%m-%d")
-    prefix = "victordeleusse"
-    bucket_name = prefix + yesterday_date
-    # Check if the bucket already exists
-    try:
-        bucket = storage_client.get_bucket(bucket_name)
-        print(f"Le bucket {bucket_name} existe déjà.")
-    except NotFound:
-        print(f"Le bucket {bucket_name} n'existe pas. Création en cours...")
-        bucket = storage_client.create_bucket(bucket_name)
-        print(f"Creation of a new bucket : {bucket_name}")
-    blob_name = bucket_name + ".db"
-    blob = bucket.blob(blob_name)
-    url = url_historical_data_base + yesterday_date + "-data.db"
-    response = requests.get(url)
-    if response.status_code == 200:
-        blob.upload_from_string(response.content)
-        print(
-            f"Le contenu de {url} a été téléchargé dans gs://{bucket_name}/{blob_name}."
-        )
-        sqlite_to_gcs(bucket_name, blob_name)
-    else:
-        print(f"Échec du téléchargement depuis {url}")
-
+    for day in day_list:
+        storage_client = storage.Client(project=project_id)
+        prefix = "velib-data-day-"
+        bucket_name = prefix + day
+        # Check if the bucket already exists
+        try:
+            bucket = storage_client.get_bucket(bucket_name)
+            print(f"Bucket {bucket_name} already there.")
+        except NotFound:
+            print(f"Creating bucket {bucket_name} ...")
+            bucket = storage_client.create_bucket(bucket_name)
+            print(f"Creation of a new bucket : {bucket_name}")
+        blob_name = bucket_name + ".db"
+        blob = bucket.blob(blob_name)
+        url = url_historical_data_base + day + "-data.db"
+        response = requests.get(url)
+        if response.status_code == 200:
+            blob.upload_from_string(response.content)
+            print(f"Data from {url} has been loaded in gs://{bucket_name}/{blob_name}.")
+            sqlite_to_gcs(bucket_name, blob_name)
+        else:
+            print(f"Loading data from {url} failed.")
 
 def sqlite_to_gcs(bucket_name, file_name):
     print("Conversion en .csv")
@@ -97,34 +100,36 @@ def sqlite_to_gcs(bucket_name, file_name):
 
 # # # # Using Spark to manipulate data # # #
 # 1. Cluster Creation
-cluster = 'https://dataproc.googleapis.com/v1/projects/booming-splicer-415918/regions/us-central1/clusters/velib-api1-cluster'
-cluster_name = 'velib-api1-cluster'
-region = "us-central1"
+# cluster = 'https://dataproc.googleapis.com/v1/projects/booming-splicer-415918/regions/us-central1/clusters/velib-api1-cluster'
+# cluster_name = 'velib-api1-cluster'
+# #region = "us-central1"
 # 2. Getting files to specific bucket : pyspark_functions.py / requirements.txt / key.json
 # 3. DATAPROC jobs submit to execute the script in the dataproc directly
 
-def submit_dataproc_job():
-    bucket_name = 'gs://pysparkfunctions/'
-    cluster_name = "velib-api1-cluster"
-    region = "us-central1"
-    command = f"gcloud dataproc jobs submit pyspark {bucket_name}functions.py \
-    --cluster={cluster_name} \
-    --region={region} \
-    --files={bucket_name}key-booming-splicer-415918.json \
-    --py-files={bucket_name}requirements.txt"
-    try:
-        subprocess.run(command, check=True, shell=True)
-        print("Job submitted successfully.")
-    except subprocess.CalledProcessError as e:
-        print(f"Failed to submit job: {e}")
+# def submit_dataproc_job():
+#     bucket_name = 'gs://pysparkfunctions/'
+#     cluster_name = "velib-api1-cluster"
+#     #region = "us-central1"
+#     command = f"gcloud dataproc jobs submit pyspark {bucket_name}functions.py \
+#     --cluster={cluster_name} \
+#     --region={region} \
+#     --files={bucket_name}key-booming-splicer-415918.json \
+#     --py-files={bucket_name}requirements.txt"
+#     try:
+#         subprocess.run(command, check=True, shell=True)
+#         print("Job submitted successfully.")
+#     except subprocess.CalledProcessError as e:
+#         print(f"Failed to submit job: {e}")
 
 # def read_csv(data):
 #     df = pd.read_csv(data)
 #     print(df.head())
 
 if __name__ == "__main__":
-    # print("EXECUTION")
-    # # load_data_in_temp_bucket()
+    print("EXECUTION")
+    day_list = get_prw_week_bdays()
+    print(f"Loading data for days : {day_list}")
+    load_data_in_temp_bucket(day_list)
     # data_csv = "gs://victordeleusse2024-03-03/join_status.csv"
     # read_csv(data_csv)
-    submit_dataproc_job()
+    # submit_dataproc_job()

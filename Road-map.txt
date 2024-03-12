@@ -1,0 +1,4 @@
+1. Creation compte avec droits d acces a GCP / GCS
+
+2. Creation des buckets avec call api pour loader la data
+
