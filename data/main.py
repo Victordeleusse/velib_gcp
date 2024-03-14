@@ -30,9 +30,6 @@ def get_prw_week_bdays():
     return day_list
 
 def load_data_in_temp_bucket(day_list):
-    """
-    Background Cloud Function to be triggered manually by an event HTTP.
-    """
     for day in day_list:
         storage_client = storage.Client(project=project_id)
         prefix = "velib-data-day-"
@@ -89,40 +86,8 @@ def sqlite_to_gcs(bucket_name, file_name):
     finally:
         os.remove(temp_file_name)
 
-
-# # # # Using Spark to manipulate data # # #
-# 1. Cluster Creation
-# cluster = 'https://dataproc.googleapis.com/v1/projects/booming-splicer-415918/regions/us-central1/clusters/velib-api1-cluster'
-# cluster_name = 'velib-api1-cluster'
-# #region = "us-central1"
-# 2. Getting files to specific bucket : pyspark_functions.py / requirements.txt / key.json
-# 3. DATAPROC jobs submit to execute the script in the dataproc directly
-
-# def submit_dataproc_job():
-#     bucket_name = 'gs://pysparkfunctions/'
-#     cluster_name = "velib-api1-cluster"
-#     #region = "us-central1"
-#     command = f"gcloud dataproc jobs submit pyspark {bucket_name}functions.py \
-#     --cluster={cluster_name} \
-#     --region={region} \
-#     --files={bucket_name}{project_id}.json \
-#     --py-files={bucket_name}requirements.txt
-#     -- {project_id}"                                          #sys.argv[0]!!!!
-#     try:
-#         subprocess.run(command, check=True, shell=True)
-#         print("Job submitted successfully.")
-#     except subprocess.CalledProcessError as e:
-#         print(f"Failed to submit job: {e}")
-
-# def read_csv(data):
-#     df = pd.read_csv(data)
-#     print(df.head())
-
 if __name__ == "__main__":
     print("EXECUTION")
     day_list = get_prw_week_bdays()
     print(f"Loading data for days : {day_list}")
     load_data_in_temp_bucket(day_list)
-    # data_csv = "gs://victordeleusse2024-03-03/join_status.csv"
-    # read_csv(data_csv)
-    # submit_dataproc_job()
