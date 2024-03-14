@@ -1,5 +1,3 @@
-# import findspark
-# import pyspark
 import os
 import sqlite3
 import pandas as pd
@@ -11,10 +9,7 @@ from datetime import date
 from datetime import timedelta
 from google.cloud import storage
 from google.cloud import exceptions
-# import subprocess
 from google.cloud.exceptions import NotFound
-# from pyspark import SparkContext
-# from pyspark.sql import SparkSession, SQLContext, functions
 
 
 # # # GC Storage # # #
@@ -28,12 +23,9 @@ url_historical_data_base = "https://velib.nocle.fr/dump/"  # 2024-MM-DD-data.db
 def get_prw_week_bdays():
     today = date.today()
     day_of_week = today.weekday()
-    # day_names = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
     day_list = []
     for i in range(day_of_week + 3, day_of_week + 8):
         day = today - timedelta(days=i)
-        # day_of_w = day.weekday()
-        # day_list.append(day_names[day_of_w])
         day_list.append(day.strftime("%Y-%m-%d"))
     return day_list
 
@@ -113,8 +105,9 @@ def sqlite_to_gcs(bucket_name, file_name):
 #     command = f"gcloud dataproc jobs submit pyspark {bucket_name}functions.py \
 #     --cluster={cluster_name} \
 #     --region={region} \
-#     --files={bucket_name}key-booming-splicer-415918.json \
-#     --py-files={bucket_name}requirements.txt"
+#     --files={bucket_name}{project_id}.json \
+#     --py-files={bucket_name}requirements.txt
+#     -- {project_id}"                                          #sys.argv[0]!!!!
 #     try:
 #         subprocess.run(command, check=True, shell=True)
 #         print("Job submitted successfully.")

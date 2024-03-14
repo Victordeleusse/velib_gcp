@@ -34,13 +34,5 @@ Colonne(s) dans la table 'statusConso':
  - nbEDock
 
 
- Cluster Creation 
-gcloud dataproc clusters create velib-api1-cluster \                    
---region us-central1 \
---zone us-central1-a \ 
---master-machine-type n1-standard-2 \
---master-boot-disk-size 50 \
---worker-machine-type n1-standard-2 \
---worker-boot-disk-size 50 \
---num-workers 2 \                                    
---project XXX
+Cluster Creation 
+gcloud dataproc clusters create velib-api1-cluster --region europe-west1 --master-machine-type n1-standard-2 --master-boot-disk-size 50 --worker-machine-type n1-standard-2 --worker-boot-disk-size 50 --num-workers 2 --project YOUR_PROJECT_ID

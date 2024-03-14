@@ -2,3 +2,21 @@
 
 2. Creation des buckets avec call api pour loader la data
 
+3. Creation d un Cluster pour permettre a Spark de manipuler la data
+
+gcloud dataproc clusters create velib-api1-cluster \                    
+--region us-central1 \
+--zone us-central1-a \ 
+--master-machine-type n1-standard-2 \
+--master-boot-disk-size 50 \
+--worker-machine-type n1-standard-2 \
+--worker-boot-disk-size 50 \
+--num-workers 2 \
+--project YOUR_PROJECT_ID
+
+4.	Creation d un bucket : gs://pysparkfunctions
+	Copie dans ce bucket des fichiers :
+		- pyspark_functions.py (gsutil cp pyspark_functions.py gs://pysparkfunctions/functions.py)
+		- requirements.txt (gsutil cp requirements.txt gs://pysparkfunctions/requirements.txt)
+		- key-YOUR_PROJECT_ID.json (gsutil cp YOUR_PROJECT_ID.json gs://pysparkfunctions/YOUR_PROJECT_ID.json)
+	
